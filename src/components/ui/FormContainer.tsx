@@ -1,7 +1,9 @@
 import * as React from 'react'
-import { Card } from 'antd'
+import { Card, Grid } from 'antd'
 
-interface AuthFormContainerProps {
+const { useBreakpoint } = Grid
+
+interface FormContainerProps {
   children: React.ReactNode
   maxWidth?: number
 }
@@ -10,13 +12,17 @@ export const FormContainer = ({
   children,
   maxWidth = 440,
   ...cardProps
-}: AuthFormContainerProps) => {
+}: FormContainerProps) => {
+  const screens = useBreakpoint()
+  const margin = screens.xs ? 16 : 0
+
   return (
     <Card
       variant="borderless"
       style={{
         maxWidth,
-        width: '100%'
+        width: '100%',
+        margin
       }}
       styles={{
         body: {

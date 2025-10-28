@@ -1,22 +1,21 @@
 import { CompanyLogo } from './ui/CompanyLogo.tsx'
-import { Flex, Typography } from 'antd'
+import { Flex, Grid, Typography } from 'antd'
 
 const { Title, Text } = Typography
+const { useBreakpoint } = Grid
 
-interface LoginFormProps {
+interface FormHeaderProps {
   showTwoFactorDescription?: boolean
 }
 
 export const FormHeader = ({
   showTwoFactorDescription = false
-}: LoginFormProps) => {
+}: FormHeaderProps) => {
+  const screens = useBreakpoint()
+  const padding = screens.xs ? 0 : '0 20px'
+
   return (
-    <Flex
-      vertical={true}
-      justify="center"
-      align="center"
-      style={{ padding: '0 20px' }}
-    >
+    <Flex vertical={true} justify="center" align="center" style={{ padding }}>
       <CompanyLogo companyName="Company" logoUrl="/symbol.svg" />
 
       <Title level={3} style={{ textAlign: 'center', margin: '4px 0' }}>
