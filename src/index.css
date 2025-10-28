@@ -9,3 +9,11 @@ body,
 #root {
   height: 100%;
 }
+
+:root {
+  --ant-color-text-secondary: rgba(0,0,0,0.45);
+}
+
+.ant-input-prefix {
+  color: var(--ant-color-text-secondary);
+}
