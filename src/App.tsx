@@ -1,9 +1,14 @@
 import { AuthPage } from './pages/AuthPage.tsx'
+import { Flex } from 'antd'
 
 export const App = () => {
   return (
-    <div className="h-screen bg-gray-100 flex justify-center items-center">
+    <Flex
+      justify="center"
+      align="center"
+      style={{ height: '100vh', backgroundColor: '#F5F5F5' }}
+    >
       <AuthPage />
-    </div>
+    </Flex>
   )
 }
