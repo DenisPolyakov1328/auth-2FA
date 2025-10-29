@@ -17,3 +17,9 @@ body,
 .ant-input-prefix {
   color: var(--ant-color-text-secondary);
 }
+
+.ant-otp-input-wrapper .ant-otp-input {
+  height: 60px;
+  font-size: 24px;
+  text-align: center;
+}
