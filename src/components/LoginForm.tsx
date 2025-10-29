@@ -1,8 +1,10 @@
 import { Button, Form, Input } from 'antd'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { FormHeader } from './FormHeader.tsx'
+import { useEffect, useState } from 'react'
 
 export const LoginForm = () => {
+  const [mounted, setMounted] = useState(false)
   const [form] = Form.useForm()
 
   const onFinish = (values: { email: string; password: string }) => {
@@ -11,6 +13,9 @@ export const LoginForm = () => {
     form.resetFields()
   }
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   return (
     <>
       <FormHeader />
@@ -62,6 +67,7 @@ export const LoginForm = () => {
               size="large"
               block
               disabled={
+                !mounted ||
                 !form.isFieldsTouched(true) ||
                 !!form.getFieldsError().filter(({ errors }) => errors.length)
                   .length
