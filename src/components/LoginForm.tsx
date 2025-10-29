@@ -2,14 +2,25 @@ import { Button, Form, Input } from 'antd'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { FormHeader } from './FormHeader.tsx'
 import { useEffect, useState } from 'react'
+import { useLogin } from '../hooks/useLogin.ts'
 
 export const LoginForm = () => {
   const [mounted, setMounted] = useState(false)
   const [form] = Form.useForm()
+  const loginMutation = useLogin()
 
   const onFinish = (values: { email: string; password: string }) => {
-    console.log('Submitted:', values)
-
+    loginMutation.mutate(values, {
+      onSuccess: (data) => {
+        console.log('Успешный логин:', data)
+        if (data.need2fa) {
+          console.log('Переход на 2FA')
+        }
+      },
+      onError: (error) => {
+        console.error('Ошибка логина:', error.message)
+      }
+    })
     form.resetFields()
   }
 
