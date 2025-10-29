@@ -61,5 +61,8 @@ export const handlers = [
 
   http.post('/api/auth/resend', async () => {
     return HttpResponse.json({ sent: true, expiresIn: 120 }, { status: 200 })
-  })
+  }),
+
+  // перехватываю первый запрос при загрузке, обрабатываю предупреждение от MSW
+  http.get('/', () => HttpResponse.text('OK'))
 ]
