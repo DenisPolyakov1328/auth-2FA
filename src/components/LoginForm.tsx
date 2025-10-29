@@ -4,7 +4,11 @@ import { FormHeader } from './FormHeader.tsx'
 import { useEffect, useState } from 'react'
 import { useLogin } from '../hooks/useLogin.ts'
 
-export const LoginForm = () => {
+interface LoginFormProps {
+  onNeed2FA: (expiresIn: number) => void
+}
+
+export const LoginForm = ({ onNeed2FA }: LoginFormProps) => {
   const [mounted, setMounted] = useState(false)
   const [form] = Form.useForm()
   const loginMutation = useLogin()
@@ -14,7 +18,7 @@ export const LoginForm = () => {
       onSuccess: (data) => {
         console.log('Успешный логин:', data)
         if (data.need2fa) {
-          console.log('Переход на 2FA')
+          onNeed2FA(data.expiresIn)
         }
       },
       onError: (error) => {

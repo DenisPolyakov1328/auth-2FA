@@ -4,10 +4,29 @@ import { LoginForm } from '../components/LoginForm.tsx'
 import { TwoFactorForm } from '../components/TwoFactorForm.tsx'
 
 export const AuthPage = () => {
-  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [step, setStep] = useState<'login' | '2fa'>('login')
+  const [expiresIn, setExpiresIn] = useState(0)
+
   return (
     <FormContainer>
-      {!sessionId ? <LoginForm /> : <TwoFactorForm />}
+      {step === 'login' ? (
+        <LoginForm
+          onNeed2FA={(expiresInValue: number) => {
+            setExpiresIn(expiresInValue)
+            setStep('2fa')
+          }}
+        />
+      ) : (
+        <TwoFactorForm
+          expiresIn={expiresIn}
+          onSuccess={() => {
+            console.log('Двухфакторная аутентификация')
+          }}
+          onExpired={() => {
+            console.log('Код истёк')
+          }}
+        />
+      )}
     </FormContainer>
   )
 }
