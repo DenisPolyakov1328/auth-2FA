@@ -7,7 +7,6 @@ import 'antd/dist/reset.css'
 import './index.css'
 import { themeConfig } from './theme/config.ts'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 const queryClient = new QueryClient()
 
@@ -24,7 +23,6 @@ enableMocking().then(() => {
       <ConfigProvider theme={themeConfig}>
         <QueryClientProvider client={queryClient}>
           <App />
-          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ConfigProvider>
     </StrictMode>
