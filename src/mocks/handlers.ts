@@ -24,7 +24,7 @@ export const handlers = [
 
     if (email === 'user@ok.com' && password === 'password123') {
       return HttpResponse.json(
-        { need2fa: true, sessionId: 'session-123', expiresIn: 120 },
+        { need2fa: true, sessionId: 'session-123', expiresIn: 60 },
         { status: 200 }
       )
     }
@@ -60,7 +60,7 @@ export const handlers = [
   }),
 
   http.post('/api/auth/resend', async () => {
-    return HttpResponse.json({ sent: true, expiresIn: 120 }, { status: 200 })
+    return HttpResponse.json({ sent: true, expiresIn: 60 }, { status: 200 })
   }),
 
   // перехватываю первый запрос при загрузке, обрабатываю предупреждение от MSW
