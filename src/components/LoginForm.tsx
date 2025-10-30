@@ -1,14 +1,18 @@
 import { Button, Form, Input } from 'antd'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { FormHeader } from './FormHeader.tsx'
-import { useEffect, useState } from 'react'
 import { useLogin } from '../hooks/useLogin.ts'
+import { useEffect, useState } from 'react'
 
 interface LoginFormProps {
-  onNeed2FA: (expiresIn: number) => void
+  onSuccess: (data: {
+    need2fa: boolean
+    sessionId: string
+    expiresIn: number
+  }) => void
 }
 
-export const LoginForm = ({ onNeed2FA }: LoginFormProps) => {
+export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const [mounted, setMounted] = useState(false)
   const [form] = Form.useForm()
   const loginMutation = useLogin()
@@ -16,10 +20,7 @@ export const LoginForm = ({ onNeed2FA }: LoginFormProps) => {
   const onFinish = (values: { email: string; password: string }) => {
     loginMutation.mutate(values, {
       onSuccess: (data) => {
-        console.log('Успешный логин:', data)
-        if (data.need2fa) {
-          onNeed2FA(data.expiresIn)
-        }
+        onSuccess(data)
       },
       onError: (error) => {
         console.error('Ошибка логина:', error.message)
@@ -28,6 +29,7 @@ export const LoginForm = ({ onNeed2FA }: LoginFormProps) => {
     form.resetFields()
   }
 
+  // убрал мигание кнопки при перезагрузке страницы
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -55,6 +57,7 @@ export const LoginForm = ({ onNeed2FA }: LoginFormProps) => {
             prefix={<UserOutlined style={{ marginRight: 4 }} />}
           />
         </Form.Item>
+
         <Form.Item
           name="password"
           style={{ marginBottom: 16 }}
@@ -71,9 +74,10 @@ export const LoginForm = ({ onNeed2FA }: LoginFormProps) => {
             size="large"
             placeholder="Password"
             prefix={<LockOutlined style={{ marginRight: 10 }} />}
-            visibilityToggle={false} // Убрал глаз только из-за макета
+            visibilityToggle={false}
           />
         </Form.Item>
+
         <Form.Item style={{ marginBottom: 0 }} shouldUpdate>
           {() => (
             <Button

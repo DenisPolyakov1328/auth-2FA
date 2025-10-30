@@ -1,38 +1,54 @@
 import { useState, useEffect } from 'react'
-import { Button, Flex, Input, message } from 'antd'
+import { Button, Flex, Form, Input } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { FormHeader } from './FormHeader'
+import { useVerify2fa } from '../hooks/useVerify2fa.ts'
+import { useResendCode } from '../hooks/useResendCode.ts'
 
 interface TwoFactorFormProps {
   expiresIn: number
   onBack: () => void
   onSuccess: () => void
   onExpired: () => void
+  sessionId: string
 }
 
 export const TwoFactorForm = ({
   expiresIn,
   onBack,
   onSuccess,
-  onExpired
+  onExpired,
+  sessionId
 }: TwoFactorFormProps) => {
   const [code, setCode] = useState('')
   const [timeLeft, setTimeLeft] = useState(expiresIn)
-  const [msgApi, contextHolder] = message.useMessage()
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = () => {
-    if (code === '123456') {
-      void msgApi.success('Код подтверждён')
+  const verify2faMutation = useVerify2fa()
+  const resendCodeMutation = useResendCode()
+
+  const handleSubmit = async () => {
+    setError(null)
+
+    try {
+      await verify2faMutation.mutateAsync({ sessionId, code })
       onSuccess()
-    } else {
-      void msgApi.error('Неверный код')
+    } catch (err: any) {
+      setError(err.message || 'Неверный код')
     }
   }
 
   const handleResend = () => {
-    void msgApi.info('Новый код отправлен')
-    setCode('')
-    setTimeLeft(expiresIn)
+    resendCodeMutation.mutate(undefined, {
+      onSuccess: (data) => {
+        setCode('')
+        setError(null)
+        setTimeLeft(data.expiresIn)
+      },
+      onError: (err: any) => {
+        setError(err.message || 'Не удалось отправить код')
+      }
+    })
   }
 
   useEffect(() => {
@@ -49,8 +65,6 @@ export const TwoFactorForm = ({
 
   return (
     <>
-      {contextHolder}
-
       <Button
         type="text"
         icon={<ArrowLeftOutlined style={{ fontSize: 18 }} />}
@@ -61,16 +75,32 @@ export const TwoFactorForm = ({
       <FormHeader showTwoFactorDescription={true} />
 
       <Flex vertical gap={16} style={{ width: '100%', marginTop: 24 }}>
-        <Input.OTP
-          value={code}
-          onChange={setCode}
-          length={6}
-          size="large"
-          style={{ columnGap: 12 }}
-        />
+        <Form.Item
+          validateStatus={error ? 'error' : ''}
+          help={error ? 'Invalid code' : ''}
+          style={{ marginBottom: 0 }}
+        >
+          <Input.OTP
+            value={code}
+            onChange={(value) => {
+              setCode(value)
+              setError(null)
+              if (verify2faMutation.isError) verify2faMutation.reset()
+            }}
+            length={6}
+            size="large"
+            style={{ columnGap: 12, marginBottom: 6 }}
+          />
+        </Form.Item>
 
         {isCodeComplete && timeLeft > 0 && (
-          <Button type="primary" size="large" block onClick={handleSubmit}>
+          <Button
+            type="primary"
+            size="large"
+            block
+            onClick={handleSubmit}
+            disabled={verify2faMutation.isError}
+          >
             Continue
           </Button>
         )}
