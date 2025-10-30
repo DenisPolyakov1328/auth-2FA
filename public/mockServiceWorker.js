@@ -34,13 +34,13 @@ addEventListener('message', async function (event) {
   }
 
   const allClients = await self.clients.matchAll({
-    type: 'window',
+    type: 'window'
   })
 
   switch (event.data) {
     case 'KEEPALIVE_REQUEST': {
       sendToClient(client, {
-        type: 'KEEPALIVE_RESPONSE',
+        type: 'KEEPALIVE_RESPONSE'
       })
       break
     }
@@ -50,8 +50,8 @@ addEventListener('message', async function (event) {
         type: 'INTEGRITY_CHECK_RESPONSE',
         payload: {
           packageVersion: PACKAGE_VERSION,
-          checksum: INTEGRITY_CHECKSUM,
-        },
+          checksum: INTEGRITY_CHECKSUM
+        }
       })
       break
     }
@@ -64,9 +64,9 @@ addEventListener('message', async function (event) {
         payload: {
           client: {
             id: client.id,
-            frameType: client.frameType,
-          },
-        },
+            frameType: client.frameType
+          }
+        }
       })
       break
     }
@@ -96,7 +96,7 @@ addEventListener('fetch', function (event) {
     return
   }
 
-  // Opening the DevTools triggers the "only-if-cached" request
+  // Opening the DevTools triggers the "only-if-cached" apiRequest
   // that cannot be handled by the worker. Bypass such requests.
   if (
     event.request.cache === 'only-if-cached' &&
@@ -128,7 +128,7 @@ async function handleRequest(event, requestId, requestInterceptedAt) {
     event,
     client,
     requestId,
-    requestInterceptedAt,
+    requestInterceptedAt
   )
 
   // Send back the response clone for the "response:*" life-cycle events.
@@ -148,18 +148,18 @@ async function handleRequest(event, requestId, requestInterceptedAt) {
           isMockedResponse: IS_MOCKED_RESPONSE in response,
           request: {
             id: requestId,
-            ...serializedRequest,
+            ...serializedRequest
           },
           response: {
             type: responseClone.type,
             status: responseClone.status,
             statusText: responseClone.statusText,
             headers: Object.fromEntries(responseClone.headers.entries()),
-            body: responseClone.body,
-          },
-        },
+            body: responseClone.body
+          }
+        }
       },
-      responseClone.body ? [serializedRequest.body, responseClone.body] : [],
+      responseClone.body ? [serializedRequest.body, responseClone.body] : []
     )
   }
 
@@ -168,7 +168,7 @@ async function handleRequest(event, requestId, requestInterceptedAt) {
 
 /**
  * Resolve the main client for the given event.
- * Client that issues a request doesn't necessarily equal the client
+ * Client that issues a apiRequest doesn't necessarily equal the client
  * that registered the worker. It's with the latter the worker should
  * communicate with during the response resolving phase.
  * @param {FetchEvent} event
@@ -186,7 +186,7 @@ async function resolveMainClient(event) {
   }
 
   const allClients = await self.clients.matchAll({
-    type: 'window',
+    type: 'window'
   })
 
   return allClients
@@ -209,23 +209,23 @@ async function resolveMainClient(event) {
  * @returns {Promise<Response>}
  */
 async function getResponse(event, client, requestId, requestInterceptedAt) {
-  // Clone the request because it might've been already used
+  // Clone the apiRequest because it might've been already used
   // (i.e. its body has been read and sent to the client).
   const requestClone = event.request.clone()
 
   function passthrough() {
-    // Cast the request headers to a new Headers instance
+    // Cast the apiRequest headers to a new Headers instance
     // so the headers can be manipulated with.
     const headers = new Headers(requestClone.headers)
 
-    // Remove the "accept" header value that marked this request as passthrough.
-    // This prevents request alteration and also keeps it compliant with the
+    // Remove the "accept" header value that marked this apiRequest as passthrough.
+    // This prevents apiRequest alteration and also keeps it compliant with the
     // user-defined CORS policies.
     const acceptHeader = headers.get('accept')
     if (acceptHeader) {
       const values = acceptHeader.split(',').map((value) => value.trim())
       const filteredValues = values.filter(
-        (value) => value !== 'msw/passthrough',
+        (value) => value !== 'msw/passthrough'
       )
 
       if (filteredValues.length > 0) {
@@ -251,7 +251,7 @@ async function getResponse(event, client, requestId, requestInterceptedAt) {
     return passthrough()
   }
 
-  // Notify the client that a request has been intercepted.
+  // Notify the client that a apiRequest has been intercepted.
   const serializedRequest = await serializeRequest(event.request)
   const clientMessage = await sendToClient(
     client,
@@ -260,10 +260,10 @@ async function getResponse(event, client, requestId, requestInterceptedAt) {
       payload: {
         id: requestId,
         interceptedAt: requestInterceptedAt,
-        ...serializedRequest,
-      },
+        ...serializedRequest
+      }
     },
-    [serializedRequest.body],
+    [serializedRequest.body]
   )
 
   switch (clientMessage.type) {
@@ -299,7 +299,7 @@ function sendToClient(client, message, transferrables = []) {
 
     client.postMessage(message, [
       channel.port2,
-      ...transferrables.filter(Boolean),
+      ...transferrables.filter(Boolean)
     ])
   })
 }
@@ -321,7 +321,7 @@ function respondWithMock(response) {
 
   Reflect.defineProperty(mockedResponse, IS_MOCKED_RESPONSE, {
     value: true,
-    enumerable: true,
+    enumerable: true
   })
 
   return mockedResponse
@@ -344,6 +344,6 @@ async function serializeRequest(request) {
     referrer: request.referrer,
     referrerPolicy: request.referrerPolicy,
     body: await request.arrayBuffer(),
-    keepalive: request.keepalive,
+    keepalive: request.keepalive
   }
 }
