@@ -1,7 +1,7 @@
 import { CompanyLogo } from './ui/CompanyLogo.tsx'
 import { Flex, Grid, Typography } from 'antd'
 
-const { Title, Text } = Typography
+const { Title } = Typography
 const { useBreakpoint } = Grid
 
 interface FormHeaderProps {
@@ -25,9 +25,12 @@ export const FormHeader = ({
       </Title>
 
       {showTwoFactorDescription && (
-        <Text style={{ fontSize: 16, textAlign: 'center' }}>
+        <Title
+          level={5}
+          style={{ textAlign: 'center', margin: 0, fontWeight: 400 }}
+        >
           Enter the 6-digit code from the Google Authenticator app
-        </Text>
+        </Title>
       )}
     </Flex>
   )

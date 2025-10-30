@@ -19,6 +19,7 @@ export const AuthPage = () => {
       ) : (
         <TwoFactorForm
           expiresIn={expiresIn}
+          onBack={() => setStep('login')}
           onSuccess={() => {
             console.log('Двухфакторная аутентификация')
           }}

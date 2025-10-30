@@ -51,11 +51,16 @@ export const TwoFactorForm = ({
     <>
       {contextHolder}
 
-      <Button type="text" icon={<ArrowLeftOutlined />} onClick={onBack} />
+      <Button
+        type="text"
+        icon={<ArrowLeftOutlined style={{ fontSize: 18 }} />}
+        onClick={onBack}
+        style={{ position: 'absolute', width: 40 }}
+      />
 
       <FormHeader showTwoFactorDescription={true} />
 
-      <Flex vertical gap={16} style={{ width: '100%', marginTop: 20 }}>
+      <Flex vertical gap={16} style={{ width: '100%', marginTop: 24 }}>
         <Input.OTP
           value={code}
           onChange={setCode}
