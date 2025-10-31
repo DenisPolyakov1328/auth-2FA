@@ -73,7 +73,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
             size="large"
             placeholder="Password"
             prefix={<LockOutlined style={{ marginRight: 10 }} />}
-            visibilityToggle={false}
+            visibilityToggle={false} // убрал глаз по макету
             onChange={() => serverError && setServerError(null)}
           />
         </ZodFormItem>
