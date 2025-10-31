@@ -3,6 +3,21 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { FormHeader } from './FormHeader.tsx'
 import { useLogin } from '../hooks/useLogin.ts'
 import { useEffect, useState } from 'react'
+import { z } from 'zod'
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .nonempty({ message: 'Please enter your email' })
+    .email({ message: 'Enter a valid email address' }),
+  password: z
+    .string()
+    .nonempty({ message: 'Please enter your password' })
+    .min(6, { message: 'Password must be at least 6 characters' })
+    .regex(/^[a-zA-Z0-9!@#$%^&*]+$/, {
+      message: 'Password contains invalid characters'
+    })
+})
 
 interface LoginFormProps {
   onSuccess: (data: {
@@ -50,8 +65,14 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           name="email"
           style={{ marginBottom: 16 }}
           rules={[
-            { required: true, message: 'Please enter your email' },
-            { type: 'email', message: 'Enter a valid email address' }
+            {
+              validator: (_, value) => {
+                const result = loginSchema.shape.email.safeParse(value)
+                return result.success
+                  ? Promise.resolve()
+                  : Promise.reject(result.error.issues[0].message)
+              }
+            }
           ]}
         >
           <Input
@@ -66,11 +87,13 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           name="password"
           style={{ marginBottom: 16 }}
           rules={[
-            { required: true, message: 'Please enter your password' },
-            { min: 6, message: 'Password must be at least 6 characters' },
             {
-              pattern: /^[a-zA-Z0-9!@#$%^&*]+$/,
-              message: 'Password contains invalid characters'
+              validator: (_, value) => {
+                const result = loginSchema.shape.password.safeParse(value)
+                return result.success
+                  ? Promise.resolve()
+                  : Promise.reject(result.error.issues[0].message)
+              }
             }
           ]}
         >
