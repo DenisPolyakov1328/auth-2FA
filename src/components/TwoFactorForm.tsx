@@ -49,9 +49,12 @@ export const TwoFactorForm = ({
   }
 
   useEffect(() => {
-    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000)
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1)
+    }, 1000)
+
     return () => clearInterval(timer)
-  }, [timeLeft])
+  }, [])
 
   const isCodeComplete = code.length === 6
 
