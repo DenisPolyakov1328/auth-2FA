@@ -77,11 +77,21 @@ export const TwoFactorForm = ({
           style={{ marginBottom: 0 }}
         >
           <Input.OTP
+            inputMode="numeric"
             value={code}
             onChange={(value) => {
               setCode(value)
               setError(false)
               if (verify2faMutation.isError) verify2faMutation.reset()
+            }}
+            onKeyDown={(e) => {
+              if (
+                !/[0-9]/.test(e.key) &&
+                e.key !== 'Backspace' &&
+                e.key !== 'Tab'
+              ) {
+                e.preventDefault()
+              }
             }}
             length={6}
             size="large"
