@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Button, Flex, Form, Input } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { FormHeader } from './FormHeader'
-import { useVerify2fa } from '../hooks/useVerify2fa.ts'
-import { useResendCode } from '../hooks/useResendCode.ts'
+import { useVerify2fa } from '../hooks/api/useVerify2fa.ts'
+import { useResendCode } from '../hooks/api/useResendCode.ts'
 
 interface TwoFactorFormProps {
   expiresIn: number

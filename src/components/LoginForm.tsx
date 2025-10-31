@@ -1,7 +1,7 @@
 import { Form, Input } from 'antd'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { FormHeader } from './FormHeader.tsx'
-import { useLogin } from '../hooks/useLogin.ts'
+import { useLogin } from '../hooks/api/useLogin.ts'
 import { useEffect, useState } from 'react'
 import { loginSchema } from '../schemas/auth.ts'
 import { ZodFormItem } from './ui/ZodFormItem.tsx'
