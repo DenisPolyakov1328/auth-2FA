@@ -4,6 +4,13 @@ import { Flex, Grid, Typography } from 'antd'
 const { Title } = Typography
 const { useBreakpoint } = Grid
 
+const HEADERS = {
+  login: 'Sign in to your account to continue',
+  twoFactor: 'Two-Factor Authentication',
+  twoFactorDescription:
+    'Enter the 6-digit code from the Google Authenticator app'
+}
+
 interface FormHeaderProps {
   showTwoFactorDescription?: boolean
 }
@@ -19,9 +26,7 @@ export const FormHeader = ({
       <CompanyLogo companyName="Company" logoUrl="/symbol.svg" />
 
       <Title level={3} style={{ textAlign: 'center', margin: '4px 0' }}>
-        {showTwoFactorDescription
-          ? 'Two-Factor Authentication'
-          : 'Sign in to your account to continue'}
+        {showTwoFactorDescription ? HEADERS.twoFactor : HEADERS.login}
       </Title>
 
       {showTwoFactorDescription && (
@@ -29,7 +34,7 @@ export const FormHeader = ({
           level={5}
           style={{ textAlign: 'center', margin: 0, fontWeight: 400 }}
         >
-          Enter the 6-digit code from the Google Authenticator app
+          {HEADERS.twoFactorDescription}
         </Title>
       )}
     </Flex>
