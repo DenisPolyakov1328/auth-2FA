@@ -23,3 +23,7 @@ body,
   font-size: 24px;
   text-align: center;
 }
+
+.otp-form-item .ant-form-item-explain-error {
+  margin-top: 6px;
+}
