@@ -44,9 +44,6 @@ export const AuthPage = () => {
           expiresIn={sessionData.expiresIn}
           onBack={() => setStep('login')}
           onSuccess={handle2faSuccess}
-          onExpired={() => {
-            console.log('Код истёк')
-          }}
         />
       ) : null}
     </FormContainer>

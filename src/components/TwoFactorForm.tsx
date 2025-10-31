@@ -9,7 +9,6 @@ interface TwoFactorFormProps {
   expiresIn: number
   onBack: () => void
   onSuccess: () => void
-  onExpired: () => void
   sessionId: string
 }
 
@@ -17,24 +16,22 @@ export const TwoFactorForm = ({
   expiresIn,
   onBack,
   onSuccess,
-  onExpired,
   sessionId
 }: TwoFactorFormProps) => {
   const [code, setCode] = useState('')
   const [timeLeft, setTimeLeft] = useState(expiresIn)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState(false)
 
   const verify2faMutation = useVerify2fa()
   const resendCodeMutation = useResendCode()
 
   const handleSubmit = async () => {
-    setError(null)
-
+    setError(false)
     try {
       await verify2faMutation.mutateAsync({ sessionId, code })
       onSuccess()
-    } catch (err: any) {
-      setError(err.message || 'Неверный код')
+    } catch {
+      setError(true)
     }
   }
 
@@ -42,24 +39,19 @@ export const TwoFactorForm = ({
     resendCodeMutation.mutate(undefined, {
       onSuccess: (data) => {
         setCode('')
-        setError(null)
+        setError(false)
         setTimeLeft(data.expiresIn)
       },
-      onError: (err: any) => {
-        setError(err.message || 'Не удалось отправить код')
+      onError: () => {
+        setError(true)
       }
     })
   }
 
   useEffect(() => {
-    if (timeLeft <= 0) {
-      onExpired()
-      return
-    }
-
     const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000)
     return () => clearInterval(timer)
-  }, [timeLeft, onExpired])
+  }, [timeLeft])
 
   const isCodeComplete = code.length === 6
 
@@ -76,6 +68,7 @@ export const TwoFactorForm = ({
 
       <Flex vertical gap={16} style={{ width: '100%', marginTop: 24 }}>
         <Form.Item
+          className="otp-form-item"
           validateStatus={error ? 'error' : ''}
           help={error ? 'Invalid code' : ''}
           style={{ marginBottom: 0 }}
@@ -84,31 +77,31 @@ export const TwoFactorForm = ({
             value={code}
             onChange={(value) => {
               setCode(value)
-              setError(null)
+              setError(false)
               if (verify2faMutation.isError) verify2faMutation.reset()
             }}
             length={6}
             size="large"
-            style={{ columnGap: 12, marginBottom: 6 }}
+            style={{ columnGap: 12 }}
           />
         </Form.Item>
 
-        {isCodeComplete && timeLeft > 0 && (
-          <Button
-            type="primary"
-            size="large"
-            block
-            onClick={handleSubmit}
-            disabled={verify2faMutation.isError}
-          >
-            Continue
-          </Button>
-        )}
-
-        {timeLeft <= 0 && (
+        {timeLeft <= 0 ? (
           <Button type="primary" size="large" block onClick={handleResend}>
             Get new
           </Button>
+        ) : (
+          isCodeComplete && (
+            <Button
+              type="primary"
+              size="large"
+              block
+              onClick={handleSubmit}
+              disabled={error}
+            >
+              Continue
+            </Button>
+          )
         )}
       </Flex>
     </>

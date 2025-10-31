@@ -16,23 +16,26 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const [mounted, setMounted] = useState(false)
   const [form] = Form.useForm()
   const loginMutation = useLogin()
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const onFinish = (values: { email: string; password: string }) => {
+    setServerError(null)
     loginMutation.mutate(values, {
       onSuccess: (data) => {
         onSuccess(data)
       },
-      onError: (error) => {
-        console.error('Ошибка логина:', error.message)
+      onError: () => {
+        setServerError('Invalid credentials')
+        form.setFields([
+          { name: 'email', errors: ['Invalid credentials'] },
+          { name: 'password', errors: ['Invalid credentials'] }
+        ])
       }
     })
-    form.resetFields()
   }
 
-  // убрал мигание кнопки при перезагрузке страницы
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  useEffect(() => setMounted(true), [])
+
   return (
     <>
       <FormHeader />
@@ -55,6 +58,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
             size="large"
             placeholder="Email"
             prefix={<UserOutlined style={{ marginRight: 4 }} />}
+            onChange={() => serverError && setServerError(null)}
           />
         </Form.Item>
 
@@ -75,10 +79,11 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
             placeholder="Password"
             prefix={<LockOutlined style={{ marginRight: 10 }} />}
             visibilityToggle={false}
+            onChange={() => serverError && setServerError(null)}
           />
         </Form.Item>
 
-        <Form.Item style={{ marginBottom: 0 }} shouldUpdate>
+        <Form.Item shouldUpdate style={{ marginBottom: 0 }}>
           {() => (
             <Button
               type="primary"
