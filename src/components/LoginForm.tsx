@@ -3,21 +3,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { FormHeader } from './FormHeader.tsx'
 import { useLogin } from '../hooks/useLogin.ts'
 import { useEffect, useState } from 'react'
-import { z } from 'zod'
-
-const loginSchema = z.object({
-  email: z
-    .string()
-    .nonempty({ message: 'Please enter your email' })
-    .email({ message: 'Enter a valid email address' }),
-  password: z
-    .string()
-    .nonempty({ message: 'Please enter your password' })
-    .min(6, { message: 'Password must be at least 6 characters' })
-    .regex(/^[a-zA-Z0-9!@#$%^&*]+$/, {
-      message: 'Password contains invalid characters'
-    })
-})
+import { loginSchema } from '../schemas/auth.ts'
 
 interface LoginFormProps {
   onSuccess: (data: {
