@@ -11,9 +11,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 const queryClient = new QueryClient()
 
 async function enableMocking() {
-  if (import.meta.env.DEV) {
+  if (
+    import.meta.env.MODE === 'development' ||
+    import.meta.env.VITE_ENABLE_MSW === 'true'
+  ) {
     const { worker } = await import('./mocks/browser')
-    await worker.start()
+    await worker.start({
+      onUnhandledRequest: 'bypass'
+    })
   }
 }
 
