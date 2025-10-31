@@ -1,9 +1,11 @@
-import { Button, Form, Input } from 'antd'
+import { Form, Input } from 'antd'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { FormHeader } from './FormHeader.tsx'
 import { useLogin } from '../hooks/useLogin.ts'
 import { useEffect, useState } from 'react'
 import { loginSchema } from '../schemas/auth.ts'
+import { ZodFormItem } from './ui/ZodFormItem.tsx'
+import { SubmitButton } from './ui/SubmitButton.tsx'
 
 interface LoginFormProps {
   onSuccess: (data: {
@@ -47,19 +49,11 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
         onFinish={onFinish}
         style={{ marginTop: 20 }}
       >
-        <Form.Item
+        <ZodFormItem
           name="email"
+          schema={loginSchema.shape.email}
+          serverError={serverError}
           style={{ marginBottom: 16 }}
-          rules={[
-            {
-              validator: (_, value) => {
-                const result = loginSchema.shape.email.safeParse(value)
-                return result.success
-                  ? Promise.resolve()
-                  : Promise.reject(result.error.issues[0].message)
-              }
-            }
-          ]}
         >
           <Input
             size="large"
@@ -67,21 +61,13 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
             prefix={<UserOutlined style={{ marginRight: 4 }} />}
             onChange={() => serverError && setServerError(null)}
           />
-        </Form.Item>
+        </ZodFormItem>
 
-        <Form.Item
+        <ZodFormItem
           name="password"
+          schema={loginSchema.shape.password}
+          serverError={serverError}
           style={{ marginBottom: 16 }}
-          rules={[
-            {
-              validator: (_, value) => {
-                const result = loginSchema.shape.password.safeParse(value)
-                return result.success
-                  ? Promise.resolve()
-                  : Promise.reject(result.error.issues[0].message)
-              }
-            }
-          ]}
         >
           <Input.Password
             size="large"
@@ -90,24 +76,13 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
             visibilityToggle={false}
             onChange={() => serverError && setServerError(null)}
           />
-        </Form.Item>
+        </ZodFormItem>
 
         <Form.Item shouldUpdate style={{ marginBottom: 0 }}>
           {() => (
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-              block
-              disabled={
-                !mounted ||
-                !form.isFieldsTouched(true) ||
-                !!form.getFieldsError().filter(({ errors }) => errors.length)
-                  .length
-              }
-            >
+            <SubmitButton form={form} mounted={mounted}>
               Log in
-            </Button>
+            </SubmitButton>
           )}
         </Form.Item>
       </Form>
