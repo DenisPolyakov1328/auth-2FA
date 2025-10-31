@@ -24,12 +24,19 @@ export const useAuthStep = () => {
     setStep('login')
   }
 
+  const resetAuth = () => {
+    setStep('login')
+    setSessionData(null)
+    setIsAuthenticated(false)
+  }
+
   return {
     step,
     sessionData,
     isAuthenticated,
     setStep,
     handleLoginSuccess,
-    handle2faSuccess
+    handle2faSuccess,
+    resetAuth
   }
 }

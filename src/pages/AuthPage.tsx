@@ -1,3 +1,4 @@
+import { DashboardPage } from './DashboardPage.tsx'
 import { FormContainer } from '../components/ui/FormContainer.tsx'
 import { LoginForm } from '../components/LoginForm.tsx'
 import { TwoFactorForm } from '../components/TwoFactorForm.tsx'
@@ -8,13 +9,13 @@ export const AuthPage = () => {
     step,
     sessionData,
     isAuthenticated,
-    setStep,
     handleLoginSuccess,
-    handle2faSuccess
+    handle2faSuccess,
+    resetAuth
   } = useAuthStep()
 
   if (isAuthenticated) {
-    return <div>Добро пожаловать! Пользователь авторизован.</div>
+    return <DashboardPage onReset={resetAuth} />
   }
 
   return (
@@ -25,7 +26,7 @@ export const AuthPage = () => {
         <TwoFactorForm
           sessionId={sessionData.sessionId}
           expiresIn={sessionData.expiresIn}
-          onBack={() => setStep('login')}
+          onBack={resetAuth}
           onSuccess={handle2faSuccess}
         />
       ) : null}
